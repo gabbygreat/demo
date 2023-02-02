@@ -1,13 +1,28 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MaterialApp(home: MyHomePage()));
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  double angle = 0;
+  changeAngle(String direction) => setState(() {
+        if (direction == 'FRONT') {
+          angle += 1;
+        } else {
+          angle -= 1;
+        }
+      });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,15 +33,33 @@ class MyHomePage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: SizedBox(
-          height: 60,
+          height: 200,
           width: MediaQuery.of(context).size.width * 0.9,
           child: Stack(
             children: [
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: CustomPaint(
-                  painter: OvalArc(),
+              Positioned(
+                bottom: 10,
+                child: SizedBox(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: CustomPaint(
+                    painter: OvalArc(),
+                  ),
+                ),
+              ),
+              Transform(
+                transform: Matrix4.rotationY(angle * (pi / 2)),
+                alignment: Alignment.center,
+                child: Container(
+                  height: MediaQuery.of(context).size.height - 130,
+                  alignment: Alignment.center,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/shoe.png',
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
                 ),
               ),
               Align(
@@ -42,14 +75,20 @@ class MyHomePage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.chevron_left,
-                        color: Colors.white,
+                    children: [
+                      InkWell(
+                        onTap: () => changeAngle('BACK'),
+                        child: const Icon(
+                          Icons.chevron_left,
+                          color: Colors.white,
+                        ),
                       ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: Colors.white,
+                      GestureDetector(
+                        onTap: () => changeAngle('FRONT'),
+                        child: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -64,6 +103,8 @@ class MyHomePage extends StatelessWidget {
 }
 
 class OvalArc extends CustomPainter {
+  OvalArc();
+
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
@@ -76,7 +117,8 @@ class OvalArc extends CustomPainter {
     paint.strokeWidth = 1;
 
     canvas.drawOval(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-    canvas.drawOval(Rect.fromLTWH(1.5, -3, size.width - 3, size.height), paint2);
+    canvas.drawOval(
+        Rect.fromLTWH(1.5, -3, size.width - 3, size.height), paint2);
   }
 
   @override
